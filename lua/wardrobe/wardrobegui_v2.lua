@@ -1107,17 +1107,6 @@ function wardrobe.gui.receiveUpdate(ply, model)
 end
 hook.Add("Wardrobe_PostSetModel", "wardrobe", wardrobe.gui.receiveUpdate)
 
-function wardrobe.gui.menuCommand(ply, str)
-	if ply ~= LocalPlayer() then return end
-
-	str = str:Trim()
-	local f = str:find((wardrobe.config.commandPrefix or "[!|/]") .. (wardrobe.config.command or "wardrobe"))
-	if f == 1 then
-		wardrobe.openMenu()
-	end
-end
-hook.Add("OnPlayerChat", "wardrobe", wardrobe.gui.menuCommand)
-
 function wardrobe.gui.output(code, text)
 	-- not much yet
 
