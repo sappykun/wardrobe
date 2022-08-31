@@ -254,6 +254,8 @@ function wardrobe.gui.previewModelRequestDone()
 end
 
 function wardrobe.gui.updateSkinAndBodygroups(updateFromZero)
+	hands = LocalPlayer():GetHands()
+
 	if wardrobe.gui.shouldUpdateBodygroups then
 		if updateFromZero then
 			wardrobe.requestBodygroups(wardrobe.gui.bodygroupUpdate)
@@ -266,8 +268,10 @@ function wardrobe.gui.updateSkinAndBodygroups(updateFromZero)
 
 	if wardrobe.gui.shouldUpdateSkin then
 		wardrobe.requestSkin(wardrobe.gui.skinUpdate)
+		if hands and hands:IsValid() then hands:SetSkin(wardrobe.gui.skinUpdate) end
 	else
 		wardrobe.requestSkin(0)
+		if hands and hands:IsValid() then hands:SetSkin(0) end
 	end
 
 	wardrobe.gui.bodygroupUpdate = {}
@@ -440,7 +444,7 @@ function wardrobe.gui.constructFramework()
 			local tw, _ = surface.GetTextSize(L"Workshop: Working...")
 			tw = tw + 16
 
-			local bgColor = Color(255, 255, 255, 155)
+			local bgColor = Color(255, 255, 255, 255)
 			function f:Paint(w, h)
 				SKIN.tex.Window.Normal(4, 2, w - 8, 20, bgColor)
 
@@ -475,7 +479,7 @@ function wardrobe.gui.constructFramework()
 		m.rotateYScale = 0.3
 		m.scrollScale  = 1.1
 
-		local bgColor = Color(255, 255, 255, 155)
+		local bgColor = Color(255, 255, 255, 255)
 		function m:Paint(w, h)
 			SKIN.tex.Tab_Control(0, 0, w, h, bgColor)
 
@@ -627,7 +631,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 		bg:Dock(TOP)
 		bg:SetHeight(150)
 
-		local bgColor = Color(255, 255, 255, 155)
+		local bgColor = Color(255, 255, 255, 255)
 		function bg:Paint(w, h)
 			SKIN.tex.Tab_Control(0, 0, w, h, bgColor)
 		end
@@ -662,7 +666,6 @@ function wardrobe.gui.buildSelectionSheet(selector)
 
 		function ubgb:DoClick()
 			wardrobe.gui.updateSkinAndBodygroups()
-
 			self:SetEnabled(false)
 		end
 
@@ -899,36 +902,30 @@ end
 wardrobe.gui.optionConvars = {
 	{
 		con = "wardrobe_enabled",
-		off = "Completely Disable Wardrobe",
-		on  = "Enable Wardrobe",
+		text = "Enable wardrobe",
 	},
 	{
 		con = "wardrobe_friendsonly",
-		off = "Use Everyone's Custom Model",
-		on  = "Only Use My Friends's Custom Models",
+		text = "Only Use Friends",
 	},
 	{
 		con = "wardrobe_showunlikelymodels",
-		off = "Hide Unlikely Models",
-		on  = "Show Unlikely Models",
+		text = "Show Unlikely",
 	},
 	{
 		con = "wardrobe_requestlastmodel",
-		off = "Disable 'Last Model' Autoload",
-		on  = "Enable 'Last Model' Autoload",
+		text = "Enable Autoload",
 	},
 	{
 		con = "wardrobe_ignorepvsloading",
-		off = "Load Custom Models As Players Become Visible",
-		on  = "Load Custom Models Regardless of Visibility",
+		text = "Always Load Models",
 	},
 }
 
 if GetConVar("wardrobe_loadgmodlegs") then
 	table.insert(wardrobe.gui.optionConvars, {
 		con = "wardrobe_loadgmodlegs",
-		off = "Don't Load Legs",
-		on  = "Load Legs",
+		text = "Load Legs",
 	})
 end
 
@@ -937,12 +934,8 @@ function wardrobe.gui.buildOptionsSheet(options)
 		local dcl = vgui.Create("DCheckBoxLabel", options)
 			dcl:Dock(TOP)
 			dcl:DockMargin(0, 0, 0, 4)
-
 			dcl:SetConVar(v.con)
-
-			function dcl:Think()
-				self:SetText(self:GetChecked() and L(v.off) or L(v.on))
-			end
+			dcl:SetText(L(v.text))
 	end
 end
 

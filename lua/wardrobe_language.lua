@@ -36,6 +36,7 @@ end
 
 wardrobe.language.lookup = {}
 wardrobe.language.lookup.english = {
+	["Always Load Models"                    ] = "Always load models regardless of visibility",
 	["Clear model list"                      ] = "Clear model list",
 	["Copy Model"                            ] = "Copy Model",
 	["Copy SteamID"                          ] = "Copy SteamID",
@@ -43,19 +44,20 @@ wardrobe.language.lookup.english = {
 	["Disable Autoload"                      ] = "Disable Autoload",
 	["Disable wardrobe"                      ] = "Disable wardrobe",
 	["Don't Load Legs"                       ] = "Don't Load Legs",
-	["Enable Autoload"                       ] = "Enable Autoload",
-	["Enable wardrobe"                       ] = "Enable wardrobe",
+	["Enable Autoload"                       ] = "Autoload the last used model",
+	["Enable wardrobe"                       ] = "Enable Wardrobe",
 	["Hands?"                                ] = "Hands?",
-	["Hide Unlikely"                         ] = "Hide Unlikely",
+	["Hide Unlikely"                         ] = "Hide unlikely",
 	["Ignore addon"                          ] = "Ignore addon",
 	["Ignore model"                          ] = "Ignore model",
 	["Ignore player"                         ] = "Ignore player",
 	Info                                       = "Info",
-	["Load Legs"                             ] = "Load Legs",
+	["Load Legs"                             ] = "Load legs",
 	Name                                       = "Name",
 	No                                         = "No",
 	["No access! (Wrong job)"                ] = "No access! (Wrong job)",
 	["No access! (Wrong usergroup)"          ] = "No access! (Wrong usergroup)",
+	["Only Use Friends"                      ] = "Only use my friends' custom models",
 	["Open workshop"                         ] = "Open workshop",
 	Path                                       = "Path",
 	Preview                                    = "Preview",
@@ -67,7 +69,7 @@ wardrobe.language.lookup.english = {
 	["Reset Model"                           ] = "Reset Model",
 	["See Everyone"                          ] = "See Everyone",
 	["See Friends only"                      ] = "See Friends only",
-	["Show Unlikely"                         ] = "Show Unlikely",
+	["Show Unlikely"                         ] = "Show unlikely models",
 	Skin                                       = "Skin",
 	SteamID                                    = "SteamID",
 	["This addon is not on the whitelist!"   ] = "This addon is not on the whitelist!",
@@ -549,8 +551,8 @@ wardrobe.language.generate = wardrobe.language.lookup.english or {}
 function wardrobe.language.get(str)
 	wardrobe.language.generate[str] = str -- used to make english table, which is then sent to @Translation Team
 
-	local t = wardrobe.language.lookup[wardrobe.language.current or "english"] or {}
-	local e = wardrobe.language.lookup["english"] or wardrobe.language.generate
+	local t = wardrobe.language.lookup[wardrobe.language.current]
+	local d = wardrobe.language.lookup[wardrobe.config.defaultLanguage]
 
-	return t[str] or e[str] or str
+	return t[str] or d[str] or str
 end
