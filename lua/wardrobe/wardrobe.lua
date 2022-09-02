@@ -437,6 +437,12 @@ function wardrobe.requestModel(wsid, mdl, handsinfo)
 		serial = serial .. ";gone;0;0"
 	end
 	file.Write("wardrobe_last.txt", serial)
+
+	local hist = wardrobe.history.get(mdl)
+	if hist then
+		wardrobe.history.get(mdl).last_used = os.time()
+		wardrobe.history.save()
+	end
 end
 
 function wardrobe.isFriend(ply)
@@ -651,6 +657,17 @@ function wardrobe.requestSingle(ply)
 	net.SendToServer()
 end
 
+wardrobe.history = wardrobe.history or {}
+local meta = {}
+	meta.add = function(mdl) wardrobe.history[mdl.model] = mdl end
+	meta.remove = function(mdl) wardrobe.history[mdl] = nil end
+	meta.get = function(mdl) return wardrobe.history[mdl] or nil end
+	meta.from = function(json) for k, v in pairs(util.JSONToTable(json)) do wardrobe.history[k] = v end end
+	meta.empty = function() wardrobe.history = {} end
+	meta.save = function() local d = util.TableToJSON(wardrobe.history, true) if d then file.Write("wardrobe_history.txt", d) end end
+	meta.load = function() local d = file.Read("wardrobe_history.txt", "DATA") if d then wardrobe.history.from(d) end end
+setmetatable(wardrobe.history, {__index = meta})
+
 local shouldSync = wardrobe.enabled:GetBool() and not wardrobe.reloaded
 function wardrobe.load()
 	if wardrobe.hasLoaded then return end
@@ -680,6 +697,8 @@ function wardrobe.load()
 
 		wardrobe.lastAddon = wsid
 	end
+
+	wardrobe.history.load()
 
 	hook.Run("Wardrobe_Loaded")
 	wardrobe.hasLoaded = true

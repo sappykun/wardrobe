@@ -552,6 +552,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 			local menu = DermaMenu(self)
 			if path then menu:AddOption(L"Copy Model",       function() SetClipboardText(path) end):SetIcon("icon16/page_copy.png") end
 			if wsid then menu:AddOption(L"Copy Workshop ID", function() SetClipboardText(wsid) end):SetIcon("icon16/page_code.png") end
+			menu:AddOption(L"Remove Model",       function() wardrobe.history.remove(path) wardrobe.history.save() self:RemoveLine(i) end):SetIcon("icon16/cross.png")
 			menu:Open()
 
 			self.listMenu = menu
@@ -563,6 +564,15 @@ function wardrobe.gui.buildSelectionSheet(selector)
 			local c = function(path, name, hands)
 				l.handslookup[path] = hands
 				l:AddLine(id or "id_gone", name or "???", path, hands and L"Yes" or L"No")
+
+				local mdl_hist = {}
+				mdl_hist.wsid = id
+				mdl_hist.name = name
+				mdl_hist.model = path
+				mdl_hist.hands = hands
+
+				wardrobe.history.add(mdl_hist)
+				wardrobe.history.save()
 			end
 			wardrobe.frontend.parseModels(md, meta, c)
 		end
@@ -1060,12 +1070,11 @@ function wardrobe.openMenu()
 		elseif wardrobe.lastAddon then
 			-- Load the last addon into the list
 
-			if wardrobe.lastAddonInfo then
-				wardrobe.gui.addNewModels(wardrobe.lastAddon, wardrobe.lastAddonInfo[4], wardrobe.lastAddonInfo[5])
-			else
-				wardrobe.getAddon(wardrobe.lastAddon, function(_, _, _, mdls, meta)
-					wardrobe.gui.addNewModels(wardrobe.lastAddon, mdls, meta)
-				end, not wardrobe.showMetaLess:GetBool())
+			if wardrobe.history then
+				local panel = wardrobe.gui.frame.sheet.selector.list
+				for k, v in pairs(wardrobe.history) do
+					panel:AddLine(v.wsid, v.name, k, v.hands and L"Yes" or L"No")
+				end
 			end
 		end
 
