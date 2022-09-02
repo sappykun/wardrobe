@@ -30,12 +30,18 @@ wardrobe.config.extensions = {
 -- this can be any single character but patterns must be escaped (. -> %., + -> %+)
 -- or a group of characters enclosed in [] and seperated by |
 -- see https://www.lua.org/pil/20.2.html for more info
-wardrobe.config.commandPrefix = "[!|%.|%/|%\\]"
-wardrobe.config.commandPrefixHide = "[%/|%\\]"
+wardrobe.config.commandPrefix = "[!.%/%\\]"
+wardrobe.config.commandPrefixHide = "[%/%\\]"
 
 -- command: The command that comes after the prefix to match
 -- !"wardrobe", /"costume" et cetra
-wardrobe.config.command = "[wardrobe|outfit|model|costume]"
+wardrobe.config.command = {
+							"wardrobe",
+							"outfit",
+							"outfitter",
+							"model",
+							"costume",
+						}
 
 -- blacklistIds: Paths of files which should never be mounted
 -- please don't add your personal dislikes here, as users can blacklist addons they don't
