@@ -67,8 +67,8 @@ function gmamalicious.modelExists(mdl)
 	return file.Exists(m .. ".mdl", "GAME")
 end
 
-local pat  = [==[.+%(%s-["|'](.+)["|'],%s-["|'](.-)["|']%s-%)]==]
-local pat2 = [==[.+%(%s-["|'](.+)["|'],%s-["|'](.-)["|'],%s-(%d+),%s-["|'](.+)["|']%s-%)]==]
+local pat  = [==[.+%(%s-["|'](.+)["|']%s-,%s-["|'](.-)["|']%s-%)]==]
+local pat2 = [==[.+%(%s-["|'](.+)["|']%s-,%s-["|'](.-)["|']%s-,%s-(%d+)%s-,%s-["|'](.+)["|']%s-%)]==]
 local function _playermanagerMatch(s, ext)
 	local name, mdl, a, b = s:match(ext and pat2 or pat)
 	if not (name and mdl) then return end

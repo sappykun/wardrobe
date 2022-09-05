@@ -437,7 +437,7 @@ function mdlparser.isPlayerModel(f, sz)
 	-- 	return false, MDL_NOATTCH
 	-- end
 
-	if not mdl.localanim_count or mdl.localanim_count == 0 then
+	if not mdl.localanim_count or (mdl.localanim_count == 0 and mdl.includemodel_count == 0) then
 		return false, MDL_NOANIMS
 	end
 
@@ -452,7 +452,7 @@ function mdlparser.isPlayerModel(f, sz)
 		end
 	end
 
-	if not found then
+	if not found and mdl.includemodel_count == 0 then
 		return false, MDL_NOANIMS
 	end
 
