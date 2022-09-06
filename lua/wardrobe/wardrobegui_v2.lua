@@ -214,6 +214,10 @@ function wardrobe.gui.setPreviewModel(mdl)
 	local panel = frame.model
 	DModelPanel.SetModel(panel, mdl)
 
+	function panel.Entity:GetPlayerColor()
+		return LocalPlayer():GetPlayerColor()
+	end
+
 	wardrobe.gui.populateBodygroupsPanel(false)
 end
 
@@ -232,6 +236,10 @@ function wardrobe.gui.resetPreviewModel(dontUsePly)
 	frame.sheet.selector.preview:SetEnabled(false)
 
 	frame.model:SetModel(LocalPlayer():GetModel())
+
+	function frame.model.Entity:GetPlayerColor()
+		return LocalPlayer():GetPlayerColor()
+	end
 
 	wardrobe.gui.populateBodygroupsPanel(not dontUsePly)
 end
@@ -522,6 +530,10 @@ function wardrobe.gui.constructFramework()
 		local ply = LocalPlayer()
 		m:SetModel(ply:GetModel())
 
+		function m.Entity:GetPlayerColor()
+			return ply:GetPlayerColor()
+		end
+
 		for i = 0, ply:GetNumBodyGroups() - 1 do
 			m.Entity:SetBodygroup(i, ply:GetBodygroup(i))
 		end
@@ -625,7 +637,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 		rb:SetText(string.format("%s '%s'", L"Request", r:GetColumnText(2)))
 		rb:SetEnabled(true)
 
-		pb:SetEnabled(true)
+		pb:SetEnabled(util.IsModelLoaded(self.selected) or (wardrobe.gui.previewing and l.selected ~= LocalPlayer():GetModel()))
 
 		return DListView.OnRowSelected(self, i, r)
 	end
