@@ -395,7 +395,8 @@ function wardrobe.gui.constructBrowser()
 	f.select = vgui.Create("DButton", f)
 	local b = f.select
 		b:Dock(BOTTOM)
-		b:SetHeight(24)
+		b:SetHeight(72)
+		b:SetFont("DermaLarge")
 		b:SetText(L"Please select an addon.")
 
 		function b:DoClick()
