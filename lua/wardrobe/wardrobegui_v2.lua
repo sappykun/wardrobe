@@ -453,6 +453,7 @@ function wardrobe.gui.constructFramework()
 				SKIN.tex.Window.Normal(4, 2, w - 8, 20, bgColor)
 
 				local work = workshop.isWorking()
+				draw.RoundedBox( 4, 0, 0, w, h, Color( 100, 100, 100, 255 ) )
 				draw.SimpleText(
 					work and L"Workshop: Working..." or L"Workshop: Idle",
 					"DermaDefault",
@@ -460,8 +461,6 @@ function wardrobe.gui.constructFramework()
 					work and workshop_working or bgColor,
 					TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP
 				)
-
-				draw.RoundedBox( 4, 0, 0, w, h, Color( 100, 100, 100, 255 ) )
 			end
 		end
 
