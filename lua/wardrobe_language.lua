@@ -547,9 +547,9 @@ wardrobe.language.lookup.ukrainian = {
 	Yes                                        = "Так"
 }
 
-wardrobe.language.generate = wardrobe.language.lookup.english or {}
+--wardrobe.language.generate = wardrobe.language.lookup.english or {}
 function wardrobe.language.get(str)
-	wardrobe.language.generate[str] = str -- used to make english table, which is then sent to @Translation Team
+	--wardrobe.language.generate[str] = str -- used to make english table, which is then sent to @Translation Team
 
 	local t = wardrobe.language.lookup[wardrobe.language.current]
 	local d = wardrobe.language.lookup[wardrobe.config.defaultLanguage]
