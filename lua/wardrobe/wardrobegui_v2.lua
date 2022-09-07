@@ -560,9 +560,20 @@ function wardrobe.gui.buildSelectionSheet(selector)
 			local path = r:GetColumnText(3)
 
 			local menu = DermaMenu(self)
-			if path then menu:AddOption(L"Copy Model",       function() SetClipboardText(path) end):SetIcon("icon16/page_copy.png") end
-			if wsid then menu:AddOption(L"Copy Workshop ID", function() SetClipboardText(wsid) end):SetIcon("icon16/page_code.png") end
-			menu:AddOption(L"Remove Model",       function() wardrobe.history.remove(path) wardrobe.history.save() self:RemoveLine(i) end):SetIcon("icon16/cross.png")
+
+			if table.getn(self:GetSelected()) == 1 then
+				if path then menu:AddOption(L"Copy Model",       function() SetClipboardText(path) end):SetIcon("icon16/page_copy.png") end
+				if wsid then menu:AddOption(L"Copy Workshop ID", function() SetClipboardText(wsid) end):SetIcon("icon16/page_code.png") end
+			end
+
+			menu:AddOption(L"Remove Model"..(table.getn(self:GetSelected()) > 1 and "s" or ""), function()
+				for i, k in ipairs(self:GetSelected()) do
+					wardrobe.history.remove(k:GetColumnText(3))
+					self:RemoveLine(k:GetID())
+				end
+				wardrobe.history.save()
+			end):SetIcon("icon16/cross.png")
+
 			menu:Open()
 
 			self.listMenu = menu
