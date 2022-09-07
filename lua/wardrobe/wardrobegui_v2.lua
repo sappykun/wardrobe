@@ -18,23 +18,6 @@ function wardrobe.gui.buildNewSheet(name, icon, pan)
 	return panel, newSheet
 end
 
-function wardrobe.gui.buildNewSettingsSheet(name, icon, pan)
-	if not IsValid(wardrobe.gui.frame) then
-		wardrobe.gui.constructFramework()
-		wardrobe.gui.buildDefaultSheets()
-	end
-
-	local panel = vgui.Create(pan or "DScrollPanel", wardrobe.gui.frame.sheet.settings)
-		function panel:Paint(w, h) end
-
-		panel:Dock(FILL)
-		panel:DockMargin(8, 8, 8, 8)
-
-	local newSheet = wardrobe.gui.frame.sheet.settings:AddSheet(name, panel, icon)
-
-	return panel, newSheet
-end
-
 function wardrobe.gui.getModel()
 	local pmdl = LocalPlayer():GetModel()
 
@@ -477,6 +460,8 @@ function wardrobe.gui.constructFramework()
 					work and workshop_working or bgColor,
 					TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP
 				)
+
+				draw.RoundedBox( 4, 0, 0, w, h, Color( 100, 100, 100, 255 ) )
 			end
 		end
 

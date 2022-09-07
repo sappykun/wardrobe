@@ -19,7 +19,7 @@ wardrobe.enabled      = CreateClientConVar("wardrobe_enabled",            "1" , 
 wardrobe.friendsonly  = CreateClientConVar("wardrobe_friendsonly",        "0" , true, true, "Should wardrobe only load the models of your friends?")
 wardrobe.printlogs    = CreateClientConVar("wardrobe_printlogs",          "0" , true, true, "Should wardrobe's logs be printed to the console?")
 wardrobe.alwaysLoad   = CreateClientConVar("wardrobe_ignorepvsloading",   "0" , true, true, "Should wardrobe load people's models IMMEDIATELY upon recieving the request?")
-wardrobe.autoLoad     = CreateClientConVar("wardrobe_requestlastmodel",   "0" , true, true, "Should wardrobe ask the server to give you your last model back?")
+wardrobe.autoLoad     = CreateClientConVar("wardrobe_requestlastmodel",   "1" , true, true, "Should wardrobe ask the server to give you your last model back?")
 wardrobe.showMetaLess = CreateClientConVar("wardrobe_showunlikelymodels", "0" , true, true, "Should wardrobe's menu show unlikely models when loading an addon?")
 wardrobe.maxFileSize  = CreateClientConVar("wardrobe_maxfilesize",        "-1", true, true, "What is the maximum size an addon should be (in MiB)? -1 means the server decides.")
 
