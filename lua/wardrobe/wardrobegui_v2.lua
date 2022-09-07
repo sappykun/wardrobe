@@ -357,12 +357,15 @@ function wardrobe.gui.constructBrowser()
 
 					if data.error then
 						btn:SetText(L"Steamworks had an error: " .. tostring(data.error) .. " (" .. addon .. ")")
+						btn.bgcolor = Color(255, 120, 120, 255)
 					elseif date > compare_date then
 						btn:SetEnabled(true)
 						btn:SetText(L"Select Addon! Warning: new format, may be issues! " .. " (" .. addon .. ")")
+						btn.bgcolor = Color(120, 255, 120, 255)
 					else
 						btn:SetEnabled(true)
 						btn:SetText(L"Select Addon!" .. " (" .. addon .. ")")
+						btn.bgcolor = Color(120, 255, 120, 255)
 					end
 				end)
 			end
@@ -379,6 +382,7 @@ function wardrobe.gui.constructBrowser()
 					if IsValid(f.select) then
 						timer.Remove(timerid)
 						f.select:SetText(L"Please select an addon.")
+						f.select.bgcolor = Color(240, 240, 240, 255)
 						f.select:SetEnabled(false)
 					end
 
@@ -398,6 +402,7 @@ function wardrobe.gui.constructBrowser()
 		b:SetHeight(72)
 		b:SetFont("DermaLarge")
 		b:SetText(L"Please select an addon.")
+		b.bgcolor = Color(240, 240, 240, 255)
 
 		function b:DoClick()
 			local wsid = h.addon
@@ -413,7 +418,12 @@ function wardrobe.gui.constructBrowser()
 				h:OpenURL(wardrobe.config.workshopDefaultUrl)
 				c.AddressBar:SetText(wardrobe.config.workshopDefaultUrl)
 				self:SetText(L"Please select an addon.")
+				b.bgcolor = Color(240, 240, 240, 255)
 			end
+		end
+
+		function b:Paint(w, h)
+			 draw.RoundedBox( 8, 0, 0, w, h, self.bgcolor )
 		end
 
 	c:SetHTML(h)
@@ -1103,9 +1113,12 @@ function wardrobe.gui.output(code, text)
 end
 hook.Add("Wardrobe_Output", "wardrobe.gui", wardrobe.gui.output)
 
-function wardrobe.gui.notif(msg)
+function wardrobe.gui.notif(msg, silent)
 	notification.AddLegacy(L(msg), NOTIFY_HINT, 6)
-	surface.PlaySound("buttons/button11.wav")
+
+	if not silent then
+		surface.PlaySound("buttons/button11.wav")
+	end
 end
 hook.Add("Wardrobe_Notification", "wardrobe.gui", wardrobe.gui.notif)
 

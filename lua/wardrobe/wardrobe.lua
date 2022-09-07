@@ -43,8 +43,8 @@ end
 wardrobe.hasLoaded = false
 wardrobe.guiLoaded = false
 
-function wardrobe.notif(msg)
-	hook.Run("Wardrobe_Notification", msg)
+function wardrobe.notif(msg, silent)
+	hook.Run("Wardrobe_Notification", msg, silent)
 end
 
 local function _concat(tbl, sep)
@@ -405,6 +405,8 @@ function wardrobe.requestSkin(n)
 	net.Start("wardrobe.requestskin")
 		net.WriteUInt(n, 8)
 	net.SendToServer()
+
+	wardrobe.notif("Your model has been updated.", true)
 end
 
 function wardrobe.requestModel(wsid, mdl, handsinfo)
