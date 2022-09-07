@@ -205,20 +205,22 @@ do
 	end
 end
 
-function wardrobe.gui.setPreviewModel(mdl)
+function wardrobe.gui.setPreviewModel(mdl, wsid)
 	local frame = wardrobe.gui.frame
 	if not IsValid(frame) then return end
 
 	wardrobe.gui.previewing = true
 
-	local panel = frame.model
-	DModelPanel.SetModel(panel, mdl)
+	wardrobe.getAddon(wsid, function(_, _, _, mdls, meta)
+		local panel = frame.model
+		DModelPanel.SetModel(panel, mdl)
 
-	function panel.Entity:GetPlayerColor()
-		return LocalPlayer():GetPlayerColor()
-	end
+		function panel.Entity:GetPlayerColor()
+			return LocalPlayer():GetPlayerColor()
+		end
 
-	wardrobe.gui.populateBodygroupsPanel(false)
+		wardrobe.gui.populateBodygroupsPanel(false)
+	end, not wardrobe.showMetaLess:GetBool())
 end
 
 function wardrobe.gui.resetPreviewModel(dontUsePly)
@@ -589,6 +591,17 @@ function wardrobe.gui.buildSelectionSheet(selector)
 			wardrobe.frontend.parseModels(md, meta, c)
 		end
 
+	selector.browser = vgui.Create("DButton", selector)
+	local bb = selector.browser
+		bb:Dock(TOP)
+		bb:SetHeight(24)
+
+		bb:SetText(L"Open Workshop Browser")
+
+		function bb:DoClick()
+			wardrobe.gui.openBrowser()
+		end
+
 	selector.request = vgui.Create("DButton", selector)
 	local rb = selector.request
 		rb:Dock(TOP)
@@ -626,6 +639,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 
 			rb:SetText(L"Request Model")
 			rb:SetEnabled(false)
+			pb:SetEnabled(wardrobe.gui.previewing)
 
 			return
 		end
@@ -636,9 +650,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 
 		rb:SetText(string.format("%s '%s'", L"Request", r:GetColumnText(2)))
 		rb:SetEnabled(true)
-
-		pb:SetEnabled(util.IsModelLoaded(self.selected) or (wardrobe.gui.previewing and l.selected ~= LocalPlayer():GetModel()))
-
+		pb:SetEnabled(true)
 		return DListView.OnRowSelected(self, i, r)
 	end
 
@@ -662,7 +674,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 		if wardrobe.gui.previewing then
 			wardrobe.gui.resetPreviewModel()
 		elseif l.selected and l.selected ~= LocalPlayer():GetModel() then
-			wardrobe.gui.setPreviewModel(l.selected)
+			wardrobe.gui.setPreviewModel(l.selected, tonumber(l.wsid))
 
 			self:SetText(L"Cancel Previewing")
 		end
@@ -692,6 +704,7 @@ function wardrobe.gui.buildSelectionSheet(selector)
 		end
 
 	selector:AddItem(l)
+	selector:AddItem(bb)
 	selector:AddItem(rb)
 	selector:AddItem(pb)
 
@@ -701,21 +714,6 @@ function wardrobe.gui.buildSelectionSheet(selector)
 	selector:AddItem(ubgb)
 
 	wardrobe.gui.populateBodygroupsPanel(true)
-end
-
-function wardrobe.gui.buildDownloadSheet(download)
-	download.browser = vgui.Create("DButton", download)
-	local b = download.browser
-		b:Dock(TOP)
-		b:SetHeight(24)
-
-		b:SetText(L"Open Workshop Browser")
-
-		function b:DoClick()
-			wardrobe.gui.openBrowser()
-		end
-
-	download:AddItem(b)
 end
 
 function wardrobe.gui.buildBlacklistSheet(blacklist)
@@ -906,21 +904,6 @@ function wardrobe.gui.buildBlacklistSheet(blacklist)
 	l:update()
 end
 
-function wardrobe.gui.buildDownloadSheet(download)
-	download.browser = vgui.Create("DButton", download)
-	local b = download.browser
-		b:Dock(TOP)
-		b:SetHeight(24)
-
-		b:SetText(L"Open Workshop Browser")
-
-		function b:DoClick()
-			wardrobe.gui.openBrowser()
-		end
-
-	download:AddItem(b)
-end
-
 wardrobe.gui.optionConvars = {
 	{
 		con = "wardrobe_enabled",
@@ -959,6 +942,26 @@ function wardrobe.gui.buildOptionsSheet(options)
 			dcl:SetConVar(v.con)
 			dcl:SetText(L(v.text))
 	end
+
+   options.language = vgui.Create("DImageButton", options)
+   local pb = options.language
+		   pb:SetSize(28, 16)
+
+		   pb:SetIcon("flags16/" .. wardrobe.language.icon() .. ".png")
+
+		   function pb:DoClick()
+				   if IsValid(self.langs) then
+						   return self.langs:Remove()
+				   end
+
+				   self.langs = wardrobe.openLanguages(options)
+		   end
+
+	function options:PerformLayout()
+	   pb:SetPos(self:GetWide() - 28 - 2, 2)
+	   --DPropertySheet.PerformLayout(options)
+    end
+
 end
 
 function wardrobe.rebuildMenu()
@@ -1010,60 +1013,21 @@ function wardrobe.gui.buildDefaultSheets()
 	local selector = sheet.selector
 		wardrobe.gui.buildSelectionSheet(selector)
 
-	sheet.download = wardrobe.gui.buildNewSheet(L"Download", "icon16/basket_put.png")
-	local download = sheet.download
-		wardrobe.gui.buildDownloadSheet(download)
+	sheet.blacklist = wardrobe.gui.buildNewSheet(L"Blacklist", "icon16/user_delete.png", "DPanel")
+	local blacklist    = sheet.blacklist
+		wardrobe.gui.buildBlacklistSheet(blacklist)
 
-	local settingsTab
-	sheet.settings, settingsTab = wardrobe.gui.buildNewSheet("", "icon16/cog.png", "DPropertySheet")
-	local settings = sheet.settings
-		function settingsTab.Tab:PerformLayout()
-			self:ApplySchemeSettings()
+	sheet.options   = wardrobe.gui.buildNewSheet(L"Options",   "icon16/wrench.png")
+	local options      = sheet.options
+		wardrobe.gui.buildOptionsSheet(options)
 
-			self.Image:SetPos(10, 3)
+	sheet.about     = wardrobe.gui.buildNewSheet(L"About",     "icon16/help.png", "DPanel")
+	local about        = sheet.about
+		about.html = vgui.Create("DHTML", about)
+			local h = about.html
+				h:Dock(FILL)
 
-			if not self:IsActive() then
-				self.Image:SetImageColor(Color(255, 255, 255, 155))
-			else
-				self.Image:SetImageColor(Color(255, 255, 255, 255))
-			end
-		end
-
-		settings.language = vgui.Create("DImageButton", settings)
-		local pb = settings.language
-			pb:SetSize(28, 16)
-
-			pb:SetIcon("flags16/" .. wardrobe.language.icon() .. ".png")
-
-			function pb:DoClick()
-				if IsValid(self.langs) then
-					return self.langs:Remove()
-				end
-
-				self.langs = wardrobe.openLanguages(settings)
-			end
-
-		function settings:PerformLayout()
-			pb:SetPos(self:GetWide() - 28 - 2, 2)
-
-			DPropertySheet.PerformLayout(self)
-		end
-
-		settings.options   = wardrobe.gui.buildNewSettingsSheet(L"Options",   "icon16/wrench.png")
-		local options      = settings.options
-			wardrobe.gui.buildOptionsSheet(options)
-
-		settings.blacklist = wardrobe.gui.buildNewSettingsSheet(L"Blacklist", "icon16/user_delete.png", "DPanel")
-		local blacklist    = settings.blacklist
-			wardrobe.gui.buildBlacklistSheet(blacklist)
-
-		settings.about     = wardrobe.gui.buildNewSettingsSheet(L"About",     "icon16/help.png", "DPanel")
-		local about        = settings.about
-			about.html = vgui.Create("DHTML", about)
-				local h = about.html
-					h:Dock(FILL)
-
-					h:OpenURL("http://hexahedron.pw/wardrobe.html")
+				h:OpenURL("http://hexahedron.pw/wardrobe.html")
 end
 
 function wardrobe.openMenu()
@@ -1093,6 +1057,7 @@ function wardrobe.openMenu()
 		wardrobe.guiLoaded = true
 	end
 
+	wardrobe.gui.previewing = wardrobe.gui.previewing or false
 	wardrobe.gui.frame:SetVisible(true)
 end
 
