@@ -947,6 +947,7 @@ function wardrobe.gui.buildOptionsSheet(options)
 			dcl:DockMargin(0, 0, 0, 4)
 			dcl:SetConVar(v.con)
 			dcl:SetText(L(v.text))
+			dcl:SetTextColor( Color(0, 0, 0, 255) )
 	end
 
    options.language = vgui.Create("DImageButton", options)
@@ -965,7 +966,6 @@ function wardrobe.gui.buildOptionsSheet(options)
 
 	function options:PerformLayout()
 	   pb:SetPos(self:GetWide() - 28 - 2, 2)
-	   --DPropertySheet.PerformLayout(options)
     end
 
 end
