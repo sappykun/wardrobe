@@ -82,11 +82,8 @@ function wardrobe.getAddon(wsid, callback, ignoreMetaLess)
 
 			if not white then
 				local ok, err = gmamalicious.preDownload(wsid, info)
-				err = gmamalicious.reverseEnum[err] or gmaparser.reverseEnum[err] or err
 				if not ok then
-					wardrobe.err("Wardrobe | GMAM refused download with error code '" .. err .. "'.")
-
-					return false
+					return false, err
 				end
 			end
 		end,
@@ -96,11 +93,8 @@ function wardrobe.getAddon(wsid, callback, ignoreMetaLess)
 
 			if not done and not white then
 				local ok, err = gmamalicious.isGMAOkay(path, handle, wardrobe.config.aggressive, wardrobe.config.maxFileSize)
-				err = gmamalicious.reverseEnum[err] or gmaparser.reverseEnum[err] or err
 				if not ok then
-					wardrobe.err("Wardrobe | GMAM rejected addon with error code '" .. err .. "'.")
-
-					return false
+					return false, err
 				end
 			end
 		end,

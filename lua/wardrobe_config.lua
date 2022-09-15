@@ -59,7 +59,7 @@ wardrobe.config.blacklistFiles = {
 -- WARNING: Inverse table, form: [wsid] = true,
 wardrobe.config.blacklistIds = {
 	--[13377] = true,
-	[834368988] = true, -- invisible playermodel
+	[1136617425] = true, -- invisible playermodel
 }
 
 -- userSpecificModels: Any models or workshop ids which only specifc users should be allowed
