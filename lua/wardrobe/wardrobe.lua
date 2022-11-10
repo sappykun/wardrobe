@@ -129,7 +129,7 @@ local function _fullUpdate()
 end
 
 local function _renderRagdoll(rag)
-	if rag.wardrobe then
+	if rag.wardrobe and !hook.Run("Wardrobe_RagdollModelOverride", rag, rag:GetModel()) then
 		rag:SetModel(rag.wardrobe)
 
 		if wardrobe.ragdolls[rag] then
@@ -141,6 +141,7 @@ local function _renderRagdoll(rag)
 end
 
 local function _forceModel(ply)
+	if hook.Run("Wardrobe_PlayerModelOverride", ply, ply.originalModel) then return end
 	local mdl = ply.wardrobe
 	if mdl then
 		ply:SetModel(mdl)
@@ -149,10 +150,11 @@ local function _forceModel(ply)
 end
 
 local function _forceRag(rag)
+	if hook.Run("Wardrobe_RagdollModelOverride", rag, rag:GetModel()) then return end
 	local mdl = rag.wardrobe
 	if mdl then
 		rag:InvalidateBoneCache()
-			rag:SetModel(mdl)
+		rag:SetModel(mdl)
 		rag:InvalidateBoneCache()
 	end
 end

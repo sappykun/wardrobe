@@ -289,6 +289,7 @@ function wardrobe.gui.addNewModels(id, md, meta)
 	wardrobe.frontend.parseModels(md, meta, c)
 end
 
+wardrobe.gui.downloadButtonTextColor = Color(0, 0, 0, 255)
 function wardrobe.gui.constructBrowser()
 	if IsValid(wardrobe.gui.browser) then return end
 
@@ -385,6 +386,7 @@ function wardrobe.gui.constructBrowser()
 		b:SetHeight(72)
 		b:SetFont("DermaLarge")
 		b:SetText(L"Please select an addon.")
+		b:SetColor(wardrobe.gui.downloadButtonTextColor)
 		b.bgcolor = Color(240, 240, 240, 255)
 
 		function b:DoClick()
@@ -940,6 +942,7 @@ if GetConVar("wardrobe_loadgmodlegs") then
 	})
 end
 
+wardrobe.gui.optionsSheetTextColor = Color(0, 0, 0, 255)
 function wardrobe.gui.buildOptionsSheet(options)
 	for _, v in ipairs(wardrobe.gui.optionConvars) do
 		local dcl = vgui.Create("DCheckBoxLabel", options)
@@ -947,7 +950,7 @@ function wardrobe.gui.buildOptionsSheet(options)
 			dcl:DockMargin(0, 0, 0, 4)
 			dcl:SetConVar(v.con)
 			dcl:SetText(L(v.text))
-			dcl:SetTextColor( Color(0, 0, 0, 255) )
+			dcl:SetTextColor( wardrobe.gui.optionsSheetTextColor )
 	end
 
    options.language = vgui.Create("DImageButton", options)

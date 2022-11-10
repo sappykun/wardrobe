@@ -16,6 +16,8 @@ wardrobe.config.defaultLanguage = "english"
 -- so dont worry about having multiple things enabled
 wardrobe.config.extensions = {
 	"darkrp",
+	"morbus",
+	"zombiesurvival",
 	-- "basewars",
 	-- "ulx",
 	-- "sam",
