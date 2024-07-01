@@ -261,10 +261,9 @@ function wardrobe.gui.updateSkinAndBodygroups(updateFromZero)
 
 	if wardrobe.gui.shouldUpdateSkin then
 		wardrobe.requestSkin(wardrobe.gui.skinUpdate)
-		if hands and hands:IsValid() then hands:SetSkin(wardrobe.gui.skinUpdate) end
-	else
-		wardrobe.requestSkin(0)
-		if hands and hands:IsValid() then hands:SetSkin(0) end
+		if hands and hands:IsValid() then 
+			hands:SetSkin(wardrobe.gui.skinUpdate)
+		end
 	end
 
 	wardrobe.gui.bodygroupUpdate = {}
