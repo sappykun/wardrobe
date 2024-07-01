@@ -4,7 +4,9 @@ end
 
 print("Wardrobe | Loaded Zombie Survival extension!")
 
-wardrobe.gui.optionsSheetTextColor = Color(255, 255, 255, 255)
+if wardrobe and wardrobe.gui then
+	wardrobe.gui.optionsSheetTextColor = Color(255, 255, 255, 255)
+end
 
 local zombie_classes = GAMEMODE.ZombieClasses
 
