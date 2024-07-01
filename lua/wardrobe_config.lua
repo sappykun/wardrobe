@@ -15,17 +15,19 @@ wardrobe.config.defaultLanguage = "english"
 -- the extension will not load if you dont have support for whatever it extends
 -- so dont worry about having multiple things enabled
 wardrobe.config.extensions = {
+	"basewars",
+	"clockwork",
 	"darkrp",
+	"fatkid",
+	"hoverboards",
 	"morbus",
+	"pointshop",
+	"pointshop2",
+	"sam",
+	"serverguard",
+	"terrortown",
+	"ulx",
 	"zombiesurvival",
-	-- "basewars",
-	-- "ulx",
-	-- "sam",
-	-- "serverguard",
-	-- "pointshop",
-	-- "pointshop2",
-	-- "clockwork",
-	-- "hoverboards",
 }
 
 -- commandPrefix: Pattern to match the command prefix, [!|/] (the default) means ! or /
