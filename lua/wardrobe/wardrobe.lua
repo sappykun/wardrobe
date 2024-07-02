@@ -415,8 +415,6 @@ function wardrobe.requestModel(wsid, mdl, handsinfo)
 			net.WriteString("0")
 			net.WriteString("")
 		net.SendToServer()
-
-		file.Delete("wardrobe_last.txt")
 		return
 	end
 
@@ -428,16 +426,7 @@ function wardrobe.requestModel(wsid, mdl, handsinfo)
 
 	wardrobe.handsInfoLookup[mdl] = handsinfo
 
-	local serial = mdl .. ";" .. wsid -- TODO: Also need to store bodygroups here
-	if handsinfo and handsinfo[1] then
-		serial = serial .. ";" .. table.concat(handsinfo, ";")
-	else
-		serial = serial .. ";gone;0;0"
-	end
-	file.Write("wardrobe_last.txt", serial)
-
-	local hist = wardrobe.history.get(mdl)
-	if hist then
+	if wardrobe.history.get(mdl) then
 		wardrobe.history.get(mdl).last_used = os.time()
 		wardrobe.history.save()
 	end
@@ -655,48 +644,28 @@ function wardrobe.requestSingle(ply)
 	net.SendToServer()
 end
 
-wardrobe.history = wardrobe.history or {}
-local meta = {}
-	meta.add = function(mdl) wardrobe.history[mdl.model] = mdl end
-	meta.remove = function(mdl) wardrobe.history[mdl] = nil end
-	meta.get = function(mdl) return wardrobe.history[mdl] or nil end
-	meta.from = function(json) for k, v in pairs(util.JSONToTable(json)) do wardrobe.history[k] = v end end
-	meta.empty = function() wardrobe.history = {} end
-	meta.save = function() local d = util.TableToJSON(wardrobe.history, true) if d then file.Write("wardrobe_history.txt", d) end end
-	meta.load = function() local d = file.Read("wardrobe_history.txt", "DATA") if d then wardrobe.history.from(d) end end
-setmetatable(wardrobe.history, {__index = meta})
-
 local shouldSync = wardrobe.enabled:GetBool() and not wardrobe.reloaded
 function wardrobe.load()
 	if wardrobe.hasLoaded then return end
 
 	if shouldSync then wardrobe.requestSync() end
 
-	local s = file.Read("wardrobe_last.txt", "DATA") -- TODO: Update when new data is added
-	if s and #s > 0 then
-		local mdl, wsid, hands, skin, bodygroups = s:match([==[(.+);(%d+);(.+);(%d);(%d+)]==])
-		wsid = tonumber(wsid)
-		if not (mdl and wsid and bodygroups) then return end
+	wardrobe.history.load()
 
+	last = wardrobe.history.last()
+	if last then
+		wsid = tonumber(last.wsid)
 		if shouldSync then
-			local handsinfo
-			if hands ~= "gone" then
-				handsinfo = {hands, skin, bodygroups}
-			end
-
 			wardrobe.getAddon(wsid, function(...) -- Make sure its mounted for local client
 				if wardrobe.autoLoad:GetBool() then
-					wardrobe.requestModel(wsid, mdl, handsinfo)
+					wardrobe.requestModel(wsid, last.model, last.hands)
 				end
 
 				wardrobe.lastAddonInfo = {...}
 			end, not wardrobe.showMetaLess:GetBool())
 		end
-
 		wardrobe.lastAddon = wsid
 	end
-
-	wardrobe.history.load()
 
 	hook.Run("Wardrobe_Loaded")
 	wardrobe.hasLoaded = true

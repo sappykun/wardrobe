@@ -32,6 +32,7 @@ local function _load()
 		AddCSLuaFile("wardrobe/frontend.lua")
 		AddCSLuaFile("wardrobe/wardrobegui_v2.lua")
 		AddCSLuaFile("wardrobe/preview.lua")
+		AddCSLuaFile("wardrobe/history.lua")
 
 		resource.AddSingleFile("materials/icon64/wardrobe64.png")
 		resource.AddSingleFile("materials/wardrobeico.png")
@@ -51,6 +52,7 @@ local function _load()
 		include("wardrobe/frontend.lua")
 		include("wardrobe/wardrobegui_v2.lua")
 		include("wardrobe/preview.lua")
+		include("wardrobe/history.lua")
 
 		if not (wardrobe and wardrobe.dbg) then
 			return ErrorNoHalt("Wardrobe | Failed to load!\n")
