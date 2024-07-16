@@ -1,0 +1,12 @@
+{
+	"title": "Wardrobe - Sappy edition",
+	"type": "ServerContent",
+	"ignore":
+	[
+		"assets/*",
+		"*.md",
+		"COPYRIGHT",
+		"LICENSE-APACHE",
+		"LICENSE-MIT"
+	]
+}
