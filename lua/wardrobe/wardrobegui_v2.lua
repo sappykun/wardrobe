@@ -302,8 +302,6 @@ function wardrobe.gui.constructBrowser()
 
 		f:SetTitle("")
 
-		function f:Paint() end
-
 	f.controls = vgui.Create("DHTMLControls", f)
 	local c = f.controls
 		c:Dock(TOP)
@@ -313,13 +311,20 @@ function wardrobe.gui.constructBrowser()
 		h:Dock(FILL)
 		h:OpenURL(wardrobe.config.workshopDefaultUrl)
 		-- h:SetAllowLua(true)
+		
+		-- TODO: Separate button logic to its own method
+		h:AddFunction("wardrobe", "selectaddon", function (wsid)
+			if f.select then 
+				f.select:DoClick()
+			end
+		end)
 
 		do
 			local timerid = "WardrobeAddonHeuristics"
-			local compare_date = os.time({year = 2020, month = 1, day = 20, hour = 0, min = 0, sec = 0})
 
 			function h:addonSelectHeuristics(btn)
 				local addon = self.addon
+				btn.bgcolor = Color(240, 240, 240, 255)
 				btn:SetEnabled(false)
 				btn:SetText(L"Performing Steamworks heuristics, please wait...")
 
@@ -341,14 +346,9 @@ function wardrobe.gui.constructBrowser()
 					if data.error then
 						btn:SetText(L"Steamworks had an error: " .. tostring(data.error) .. " (" .. addon .. ")")
 						btn.bgcolor = Color(255, 120, 120, 255)
-					elseif date > compare_date then
-						btn:SetEnabled(true)
-						btn:SetText(L"Select Addon! Warning: new format, may be issues! " .. " (" .. addon .. ")")
-						btn.bgcolor = Color(120, 255, 120, 255)
 					else
 						btn:SetEnabled(true)
-						btn:SetText(L"Select Addon!" .. " (" .. addon .. ")")
-						btn.bgcolor = Color(120, 255, 120, 255)
+						btn:SetText(L"Click here to select addon!" .. " (" .. addon .. ")")
 					end
 				end)
 			end
@@ -375,6 +375,8 @@ function wardrobe.gui.constructBrowser()
 				self.addon = wsid
 				if IsValid(f.select) then
 					self:addonSelectHeuristics(f.select)
+					h:RunJavascript("document.getElementById(\"SubscribeItemOptionAdd\").innerHTML = \"Select addon\"")
+					h:RunJavascript("function SubscribeItem(wsid, game) { wardrobe.selectaddon( parseInt(wsid) ) }")
 				end
 			end
 		end
@@ -383,6 +385,9 @@ function wardrobe.gui.constructBrowser()
 	local b = f.select
 		b:Dock(BOTTOM)
 		b:SetHeight(72)
+		-- Space button more evenly in lower resolutions
+		local button_margin = math.max(0, f:GetWide()/2 - 350)
+		b:DockMargin(button_margin, 4, button_margin, 0 )
 		b:SetFont("DermaLarge")
 		b:SetText(L"Please select an addon.")
 		b:SetColor(wardrobe.gui.downloadButtonTextColor)
@@ -407,7 +412,16 @@ function wardrobe.gui.constructBrowser()
 		end
 
 		function b:Paint(w, h)
-			 draw.RoundedBox( 8, 0, 0, w, h, self.bgcolor )
+			if self:IsEnabled() then
+				self.bgcolor = Color(120, 255, 120, 255)
+				if self.Hovered then 
+					self.bgcolor = Color(180, 255, 180, 255)
+				end
+				if self:IsDown() or self.m_bSelected then
+					self.bgcolor = Color(30, 200, 30, 255)
+				end
+			end
+			draw.RoundedBox( 8, 0, 0, w, h, self.bgcolor )
 		end
 
 	c:SetHTML(h)
